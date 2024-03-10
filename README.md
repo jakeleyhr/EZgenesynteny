@@ -175,8 +175,11 @@ A wide range of image formats are supported, including PDF and EPS which can be 
 ## -csv
 To save the gene order/synteny data to a CSV file, add the **-csv** command with the desired CSV filename (without suffix), for example:
 ```
-$ ezgenesynteny -f inputfile.txt -up 5 -down 5 -plot nkx2-5plot.png -csv nkx2-5csv
+$ ezgenesynteny -f inputfile.txt -up 5 -down 5 -plot nkx2-5plot.png -csv nkx2-5table
 ```
+This saves a csv file called nkx2-5table.csv to the working directory, which looks like this when opened in Microsoft Excel:
+![nkx2-5table](https://github.com/jakeleyhr/EZgenesynteny/assets/154226340/b2f2a862-9294-4242-bd4d-d049895fd91f)
+
 This can be particularly useful for manually editing the spacing of the genes in a table to align the homologous genes.
 
 &nbsp;
