@@ -202,6 +202,8 @@ The first time you try to run ezgenesyteny, you will be prompted for an email ad
 
 &nbsp;
 &nbsp;
+## Notes
+As the program searches the genomic sequences upstream and downstream of the target gene, any protein-coding genes that are located entirely within the target gene sequence will not be found. Similarly, the upstream and downstream genes are ordered according to the order they're encountered by start coordinate, so there is currently no functionality to recognise or visualise when there might be a gene encompassing or overlapping with another gene.
 
 ## Bugs
 Please submit via the [GitHub issues page](https://github.com/jakeleyhr/EZgenesynteny/issues).  
