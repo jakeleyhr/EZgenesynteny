@@ -183,7 +183,7 @@ This can be particularly useful for manually editing the spacing of the genes in
 &nbsp;
 # changeemail usage
 ```
-$ gbemail -h
+$ changeemail -h
 usage: changeemail [-h] [-check] [-update]
 
 Manage email address for GenBank Entrez queries. Only stored locally and sent with 
@@ -194,7 +194,7 @@ options:
   -check      Check the current saved email address
   -update     Update the email address
 ```
-The first time you try to run gbgene, gbcoords, or gbrecord, you will be prompted for an email address as NCBI requires this to send queries via Entrez. After you enter this email address the first time, you won't need to enter it again, as it saved locally to a config file in the package directory. It is never shared with anyone except NCBI when you send queries via Entrez. This accessory module provides the option to check or update (change) this email address if you decide to use a different address at a later date. Any dummy email address or word (e.g. 'dummy@gmail.com' or 'dummy') can also be used if preferred. 
+The first time you try to run ezgenesyteny, you will be prompted for an email address as NCBI requires this to send queries via Entrez. After you enter this email address the first time, you won't need to enter it again, as it saved locally to a config file in the package directory. It is never shared with anyone except NCBI when you send queries via Entrez. This accessory module provides the option to check or update (change) this email address if you decide to use a different address at a later date. Any dummy email address or word (e.g. 'dummy@gmail.com' or 'dummy') can also be used if preferred. 
 
 
 &nbsp;
