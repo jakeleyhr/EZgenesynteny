@@ -4,9 +4,6 @@ Query GenBank to obtain gene orders from genomic records and simply visualise sy
 * **genevis.py**: functions to graphically visualise the gene order/synteny and save to image file
 * **emailaddress.py**: check and update the email address used to make GenBank Entrez queries
 
-
-&nbsp;
-
 ## Author
 Jake Leyhr ([@jakeleyhr](https://twitter.com/JakeLeyhr)) \
 https://github.com/jakeleyhr/EZgenesynteny
