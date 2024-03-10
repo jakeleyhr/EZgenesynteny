@@ -149,14 +149,14 @@ $ ezgenesynteny -s human mouse chicken -g gdf5 -up 5 -down 5
 ```
 The program loops through the different species and prints each output as above to the terminal.
 
-## -f
-Alternatively, a set of species and gene names can be input from a plain text file in the working directory filepath, where the text file looks like this:
+## Text file input
+Alternatively, a set of species and gene names can be input from a plain text file in the working directory filepath using **-f**, where the text file looks like this:
 ```
 human, nkx2-5
 mouse, nkx2-5
 stegostoma_tigrinum, LOC125458387
 ```
-This input method is particularly useful for cases like the one above where the homologous target gene has significantly different names in different species. Searching for the nkx2-5 gene in human and mouse returns the gene, but returns no results in the zebra shark (*stegostoma_tigrinum*), because it's not completely annotated in the genome assembly of this species. When running the program with an input text file like this, it loops through each species with its corresponding gene name and prints the results to the terminal e.g:
+This input method is particularly useful for cases like the one above where the homologous target gene has significantly different names in different species. Searching for the nkx2-5 gene in human and mouse returns the gene, but returns no results in the zebra shark (*stegostoma_tigrinum*), because it's not completely annotated in the genome assembly of this species. When running the program with an input text file using **-f**, it loops through each species with its corresponding gene name and prints the results to the terminal e.g:
 ```
 $ ezgenesynteny -f inputfile.txt -up 5 -down 5
 ```
