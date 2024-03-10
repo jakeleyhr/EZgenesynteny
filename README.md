@@ -170,6 +170,7 @@ To visualise the gene order/synteny data as a gene arrow map (saved to an image 
 $ ezgenesynteny -f inputfile.txt -up 5 -down 5 -plot nkx2-5plot.png
 ```
 When this command is run, the program prints the results to the terminal as usual, but also saves this image to the working directory:
+![nkx2-5plot](https://github.com/jakeleyhr/EZgenesynteny/assets/154226340/2e386cde-a0f8-491a-af4c-5568b06c9560)
 
 The target gene is coloured in red, and then forward/reverse strand genes are coloured in yellow/blue.
 A wide range of image formats are supported, including PDF and EPS which can be imported and edited in a vector graphics editor such as Adobe Illustrator or GIMP. If no format suffix is specified (e.g. '-plot nkx2-5plot'), PDF is selected as default.
