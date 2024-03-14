@@ -527,10 +527,16 @@ def getgenesFILE(input_file, upgenes, downgenes, outputfilename, csvfilename):
     # Read species and gene names from the input file
     with open(input_file, 'r') as file:
         for line in file:
+            # Skip empty lines
+            if not line.strip():
+                continue
             # Split each line into species and gene names
-            species, gene = line.strip().split(',')
-            specieslist.append(species.strip())
-            geneslist.append(gene.strip())
+            parts = line.strip().split(',')
+            if len(parts) == 2:
+                species.append(parts[0].strip())
+                genes.append(parts[1].strip())
+            else:
+                print("Invalid line format:", line)
 
     print(f"Species: {specieslist}")
     print(f"Genes: {geneslist}\n")
