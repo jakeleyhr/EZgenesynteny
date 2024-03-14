@@ -3,6 +3,7 @@ Query GenBank to obtain gene orders from genomic records and simply visualise sy
 * **getgenes.py**: query GenBank database with species and gene name to obtain order of surrounding protien-coding genes 
 * **genevis.py**: functions to graphically visualise the gene order/synteny and save to image file
 * **emailaddress.py**: check and update the email address used to make GenBank Entrez queries
+* **version_check.py**: automatically check package version is up to date
 
 ## Author
 Jake Leyhr ([@jakeleyhr](https://twitter.com/JakeLeyhr)) \
@@ -149,14 +150,14 @@ $ ezgenesynteny -s human mouse chicken -g gdf5 -up 5 -down 5
 ```
 The program loops through the different species and prints each output as above to the terminal.
 
-## Text file input
-Alternatively, a set of species and gene names can be input from a plain text file in the working directory filepath using **-f**, where the text file looks like this:
+## -f
+Alternatively, a set of species and gene names can be input from a plain text file in the working directory filepath, where the text file looks like this:
 ```
 human, nkx2-5
 mouse, nkx2-5
 stegostoma_tigrinum, LOC125458387
 ```
-This input method is particularly useful for cases like the one above where the homologous target gene has significantly different names in different species. Searching for the nkx2-5 gene in human and mouse returns the gene, but returns no results in the zebra shark (*stegostoma_tigrinum*), because it's not completely annotated in the genome assembly of this species. When running the program with an input text file using **-f**, it loops through each species with its corresponding gene name and prints the results to the terminal e.g:
+This input method is particularly useful for cases like the one above where the homologous target gene has significantly different names in different species. Searching for the nkx2-5 gene in human and mouse returns the gene, but returns no results in the zebra shark (*stegostoma_tigrinum*), because it's not completely annotated in the genome assembly of this species. When running the program with an input text file like this, it loops through each species with its corresponding gene name and prints the results to the terminal e.g:
 ```
 $ ezgenesynteny -f inputfile.txt -up 5 -down 5
 ```
@@ -175,11 +176,8 @@ A wide range of image formats are supported, including PDF and EPS which can be 
 ## -csv
 To save the gene order/synteny data to a CSV file, add the **-csv** command with the desired CSV filename (without suffix), for example:
 ```
-$ ezgenesynteny -f inputfile.txt -up 5 -down 5 -plot nkx2-5plot.png -csv nkx2-5table
+$ ezgenesynteny -f inputfile.txt -up 5 -down 5 -plot nkx2-5plot.png -csv nkx2-5csv
 ```
-This saves a csv file called nkx2-5table.csv to the working directory, which looks like this when opened in Microsoft Excel:
-![nkx2-5table](https://github.com/jakeleyhr/EZgenesynteny/assets/154226340/b2f2a862-9294-4242-bd4d-d049895fd91f)
-
 This can be particularly useful for manually editing the spacing of the genes in a table to align the homologous genes.
 
 &nbsp;
@@ -202,8 +200,6 @@ The first time you try to run ezgenesyteny, you will be prompted for an email ad
 
 &nbsp;
 &nbsp;
-## Notes
-As the program searches the genomic sequences upstream and downstream of the target gene, any protein-coding genes that are located entirely within the target gene sequence will not be found. Similarly, the upstream and downstream genes are ordered according to the order they're encountered by start coordinate, so there is currently no functionality to recognise or visualise when there might be a gene encompassing or overlapping with another gene.
 
 ## Bugs
 Please submit via the [GitHub issues page](https://github.com/jakeleyhr/EZgenesynteny/issues).  

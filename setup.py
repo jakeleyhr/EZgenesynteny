@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.0.1"
+VERSION = "0.0.4"
 DESCRIPTION = "A python package to quickly get and visualise the gene order/synteny around a target gene from one or more species."
 
 with open ("README.md", "r") as f:
@@ -19,7 +19,7 @@ setup(
     package_dir={"": "src"},
     package_data={'ezgenesynteny': ['config.ini']},
     install_requires=[
-        "requests",
+        "requests>=2.31.0",
         "packaging",
         "biopython>=1.83",
         "configparser",

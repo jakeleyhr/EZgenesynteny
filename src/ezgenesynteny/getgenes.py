@@ -18,6 +18,7 @@ from shutil import get_terminal_size
 from collections import OrderedDict
 from urllib.error import HTTPError
 from .genevis import plot_genes
+from .version_check import check_for_updates
 
 
 # Function #1 - get gene record
@@ -533,8 +534,8 @@ def getgenesFILE(input_file, upgenes, downgenes, outputfilename, csvfilename):
             # Split each line into species and gene names
             parts = line.strip().split(',')
             if len(parts) == 2:
-                species.append(parts[0].strip())
-                genes.append(parts[1].strip())
+                specieslist.append(parts[0].strip())
+                geneslist.append(parts[1].strip())
             else:
                 print("Invalid line format:", line)
 
@@ -582,6 +583,9 @@ def getgenesFILE(input_file, upgenes, downgenes, outputfilename, csvfilename):
 
 
 def main():
+    #Check for updates
+    check_for_updates()
+
     # Create an ArgumentParser
     parser = argparse.ArgumentParser(description="Query the GenBank database with species and gene names \
                                      to obtain a list of genes upstream and downstream of target gene.")
