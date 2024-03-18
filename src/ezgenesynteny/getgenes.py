@@ -51,7 +51,8 @@ def search_gene_info(species, gene_name):
           f" ezgenesynteny: {species} {gene_name} "+ 
           "▒"*(terminalwidth-leftindent-nameswidth)+
           "▒"*terminalwidth)
-    
+    if '.' in species:
+        species = species.split(". ", 1)[1]
     # Build the query - strict check on species name and gene name (also searches gene name synonyms)
     query = f"{species}[ORGN] AND {gene_name}[Gene Name] OR {gene_name}[Accession]"
 
@@ -156,6 +157,7 @@ def process_gene_info(gene_info, record_id, start_adjust, end_adjust, species, g
         # explore_structure(gene_info[0]['Entrezgene_locus'])
         # explore_structure(gene_info[0])
     else:
+        #species = species.split(". ", 1)[1]
         print(f"ERROR: No gene information found for {gene_name} in {species}. Check the names are correct.")
         return # Force exit the function
         #sys.exit()
@@ -170,6 +172,7 @@ def process_gene_info(gene_info, record_id, start_adjust, end_adjust, species, g
 
 
     return accession_number, requested_start_position, requested_end_position, strand, gene_ref_name
+
 
 has_run_before = False
 # Function #3 - get list of genes and features in specified region
@@ -441,11 +444,7 @@ def makecsv(species_genes, csvfilename, genenum):
             writer.writerow([species] + row)
 
 
-def getgenesCLI(species, gene_name, upgenes, downgenes, outputfilename, csvfilename):
-    if species == None or gene_name == None:
-        print("ERROR: species or gene name missing")
-        sys.exit()
-
+def get_genes(species, gene_name, upgenes, downgenes, outputfilename, csvfilename, input_file=None):
     if outputfilename:
         # Find the index of the last period
         last_period_index = outputfilename.rfind('.')
@@ -462,163 +461,91 @@ def getgenesCLI(species, gene_name, upgenes, downgenes, outputfilename, csvfilen
                 print(f"ERROR: Format '{imageformat}' is not supported plot format (supported formats: eps, jpeg, jpg, pdf, pgf, png, ps, raw, rgba, svg, svgz, tif, tiff, webp)")
                 sys.exit()
 
-    species_genes = {}  # Initialize an empty dictionary to store species genes
+    failed_lines=[]
+    if input_file:
+        species_genes_dict = {}
+        with open(input_file, 'r') as file:
+            for i, line in enumerate(file):
+                if not line.strip():
+                    continue
+                parts = line.strip().split(',')
+                if len(parts) == 2:
+                    species_name = parts[0].strip()
+                    gene = parts[1].strip()
+                    if species_name not in species_genes_dict:
+                        species_genes_dict[f"{i+1}. {species_name}"] = []
+                    species_genes_dict[f"{i+1}. {species_name}"].append(gene)
+                else:
+                    print(f"Invalid format on line {i}: {line}")
+                    failed_lines.append(line)
+        species_list = list(species_genes_dict.keys())
+        genes_list = [species_genes_dict[species] for species in species_list]
+    else:
+        species_list = species
+        genes_list = [[gene_name] for _ in range(len(species))]  # Duplicate gene_name for each species
 
-    # Loop through multi-species inputs
+    print(species_list)
+    print(genes_list)
+    species_genes = {}
     failed_species = []
     start_time = time.time()
-    for s in species:
-        # Provide arguments to run
-        try:
-            species_genes[s] = collectgenes(s, gene_name, upgenes, downgenes)
-        except Exception:
-            failed_species.append(s)
+    for species_name, genes in zip(species_list, genes_list):
+        for gene in genes:
+            try:
+                #if species_name not in species_genes:
+                species_genes[species_name] = collectgenes(species_name, gene, upgenes, downgenes)
+                #print(species_genes)
+            except Exception:
+                failed_species.append(species_name)
 
     end_time = time.time()
-    if len(species) > 1:
+    if len(species_list) > 1:
         print(f"All completed in {round(end_time - start_time, 1)} seconds\n")
     else:
         print(f"Completed in {round(end_time - start_time, 1)} seconds\n")
 
-    # Remove the outer level of the nesting (bodge)
     species_genes = {k: v[k] for k, v in species_genes.items()}
-    #print(species_genes)
 
-    # Reverse the order of keys
     reversed_data = dict(reversed(species_genes.items()))
 
     if outputfilename:
-        # Reconstruct the dictionary with reversed keys (because plot is made bottom to top)
         species_genes_r = {species: species_genes[species] for species in reversed_data}
-        # Make plot
         plot_genes(species_genes_r, title=outputfilename, format=imageformat, upgenes=upgenes)
         print(f"Plot image saved as {outputfilename}")
 
-    # Make CSV
     if csvfilename:
         genenum = upgenes + downgenes + 1
         makecsv(species_genes, csvfilename, genenum)
         print(f"CSV saved as {csvfilename}.csv")
 
-    print("")
-    return failed_species
-
-
-def getgenesFILE(input_file, upgenes, downgenes, outputfilename, csvfilename):
-    if outputfilename:
-        # Find the index of the last period
-        last_period_index = outputfilename.rfind('.')
-
-        if last_period_index != -1:  # Check if a period was found
-            imageformat = outputfilename[last_period_index + 1:]
-        else:
-            imageformat = 'pdf'
-            outputfilename = f"{outputfilename}.pdf"
-            print("Note: using PDF format for plot by default\n")
-
-        if imageformat:
-            if imageformat not in ["pdf", "eps", "png", "jpeg", "jpg", "pgf", "ps", "raw", "rgba", "svg", "svgz", "tif", "tiff", "webp"]:
-                print(f"ERROR: Format '{imageformat}' is not supported plot format (supported formats: eps, jpeg, jpg, pdf, pgf, png, ps, raw, rgba, svg, svgz, tif, tiff, webp)")
-                sys.exit()
-
-    # Initialize lists to store species and gene names
-    specieslist = []
-    geneslist = []
-
-    # Read species and gene names from the input file
-    with open(input_file, 'r') as file:
-        for line in file:
-            # Skip empty lines
-            if not line.strip():
-                continue
-            # Split each line into species and gene names
-            parts = line.strip().split(',')
-            if len(parts) == 2:
-                specieslist.append(parts[0].strip())
-                geneslist.append(parts[1].strip())
-            else:
-                print("Invalid line format:", line)
-
-    print(f"Species: {specieslist}")
-    print(f"Genes: {geneslist}\n")
-
-    species_genes = {}  # Initialize an empty dictionary to store species genes
-
-    # Loop through multi-species inputs
-    failed_species = []
-    start_time = time.time()
-    for species, gene in zip(specieslist, geneslist):
-        # Provide arguments to run
-        try:
-            species_genes[species] = collectgenes(species, gene, upgenes, downgenes)
-        except Exception:
-            failed_species.append(species)
-
-    end_time = time.time()
-    if len(species) > 1:
-        print(f"All completed in {round(end_time - start_time, 1)} seconds\n")
-    else:
-        print(f"Completed in {round(end_time - start_time, 1)} seconds\n")
-
-    # Remove the outer level of the nesting (bodge)
-    species_genes = {k: v[k] for k, v in species_genes.items()}
-
-    # Reverse the order of keys
-    reversed_data = dict(reversed(species_genes.items()))
-
-    if outputfilename:
-        # Reconstruct the dictionary with reversed keys (because plot is made bottom to top)
-        species_genes_r = {species: species_genes[species] for species in reversed_data}
-        # Make plot
-        plot_genes(species_genes_r, title=outputfilename, format=imageformat, upgenes=upgenes)
-        print(f"Plot image saved as {outputfilename}")
-
-    # Make CSV
-    if csvfilename:
-        genenum = upgenes + downgenes + 1
-        makecsv(species_genes, csvfilename, genenum)
-        print(f"CSV saved as {csvfilename}.csv")
-    
-    return failed_species
+    return failed_species, failed_lines
 
 
 def main():
-    #Check for updates
     check_for_updates()
 
-    # Create an ArgumentParser
     parser = argparse.ArgumentParser(description="Query the GenBank database with species and gene names \
-                                     to obtain a list of genes upstream and downstream of target gene.")
+                                     to obtain a list of genes upstream and downstream of the target gene.")
 
-    # Add arguments for species, gene_name, etc
     parser.add_argument("-s", "--species", nargs='+', help="Species name(s) (e.g., 'Homo_sapiens' or 'Human')")
     parser.add_argument("-g", "--gene_name", help="Gene name (e.g. BRCA1 or brca1)")
-    parser.add_argument("-up", "--upgenes", type = int, required=True, help="Number of upstream genes to search for")
-    parser.add_argument("-down", "--downgenes", type = int, required=True, help="Number of downstream genes to search for")
+    parser.add_argument("-up", "--upgenes", type=int, required=True, help="Number of upstream genes to search for")
+    parser.add_argument("-down", "--downgenes", type=int, required=True, help="Number of downstream genes to search for")
     parser.add_argument("-plot", "--plotname", default=None, help="Output file name for the gene order plot")
     parser.add_argument("-csv", "--csvname", default=None, help="Output file name for the gene order CSV")
     parser.add_argument("-f", "--input_file", default=None, help="Path to a text file containing a list of species and genes")
 
-    # Parse the command-line arguments
     args = parser.parse_args()
 
-    if args.input_file == None:
-        failed_species = getgenesCLI(
-                args.species,
-                args.gene_name,
-                args.upgenes,
-                args.downgenes,
-                args.plotname,
-                args.csvname,
-            )
-    else:
-        failed_species = getgenesFILE(
-            args.input_file,
-            args.upgenes,
-            args.downgenes,
-            args.plotname,
-            args.csvname,
-        )
+    failed_species, failed_lines = get_genes(
+        args.species,
+        args.gene_name,
+        args.upgenes,
+        args.downgenes,
+        args.plotname,
+        args.csvname,
+        args.input_file,
+    )
     if len(failed_species) > 0:
         terminalwidth = get_terminal_size()[0]
         message = f" Failed to process species: {failed_species} "
@@ -630,11 +557,18 @@ def main():
               f"{message}"+ 
               "!"*(terminalwidth-leftindent-nameswidth)+
               "!"*terminalwidth)
-
+    if len(failed_lines) > 0:
+        terminalwidth = get_terminal_size()[0]
+        message = f" Failed to process line: '{failed_lines}' "
+        nameswidth = len(message)
+        leftindent = ((terminalwidth-nameswidth)//2)
+        print("\n" + 
+              "!"*terminalwidth+
+              "!"*leftindent+ 
+              f"{message}"+ 
+              "!"*(terminalwidth-leftindent-nameswidth)+
+              "!"*terminalwidth)
 
 
 if __name__ == '__main__':
     main()
-
-
-    
