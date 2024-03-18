@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.0.4"
+VERSION = "0.0.5"
 DESCRIPTION = "A python package to quickly get and visualise the gene order/synteny around a target gene from one or more species."
 
 with open ("README.md", "r") as f:
